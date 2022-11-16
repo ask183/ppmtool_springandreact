@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { getProject, createProject } from '../../actions/projectActions';
 import { connect } from 'react-redux';
-import { createProject } from '../../actions/projectActions';
-import classnames from "classnames";
-export class AddProject extends Component {
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+class UpdateProject extends Component {
+  //set state
   constructor() {
     super();
 
     this.state = {
+      id: '',
       projectName: '',
       projectIdentifier: '',
       description: '',
@@ -15,16 +18,39 @@ export class AddProject extends Component {
       end_date: '',
       errors: {},
     };
-
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  //lifecycle hook that recieves new props from redux state
+  //lifecycle hook componentWillReceiveProps() set that state from the next props we're getting
   componentWillReceiveProps(nextProps) {
+    const {
+      id,
+      projectName,
+      projectIdentifier,
+      description,
+      start_date,
+      end_date,
+    } = nextProps.project;
+
+    this.setState({
+      id,
+      projectName,
+      projectIdentifier,
+      description,
+      start_date,
+      end_date,
+    });
+
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
+  }
+
+  //lifecycle hook componentDidMount() when component loads what happens
+  componentDidMount() {
+    const { id } = this.props.match.params;
+    this.props.getProject(id, this.props.history);
   }
 
   onChange(e) {
@@ -33,7 +59,9 @@ export class AddProject extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    const newProject = {
+
+    const updateProject = {
+      id: this.state.id,
       projectName: this.state.projectName,
       projectIdentifier: this.state.projectIdentifier,
       description: this.state.description,
@@ -41,55 +69,56 @@ export class AddProject extends Component {
       end_date: this.state.end_date,
     };
 
-    this.props.createProject(newProject, this.props.history);
+    this.props.createProject(updateProject, this.props.history);
   }
 
   render() {
-    //destructuring to get errors from state
-    const { errors } = this.state;
+
+    const {errors} = this.state;
 
     return (
       <div className="register">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h5 className="display-4 text-center">Create Project form</h5>
+              <h5 className="display-4 text-center">Update Project form</h5>
               <hr />
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid":errors.projectName
+                      "is-invalid": errors.projectName
                     })}
                     placeholder="Project Name"
                     name="projectName"
                     value={this.state.projectName}
                     onChange={this.onChange}
                   />
-                  {errors.projectName && (  //if statement syntax
+                  {errors.projectName && (
                     <div className="invalid-feedback">{errors.projectName}</div>
-                  )} 
+                  )}
                 </div>
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid":errors.projectIdentifier
+                      "is-invalid": errors.projectIdentifier
                     })}
                     placeholder="Unique Project ID"
+                    disabled
                     name="projectIdentifier"
                     value={this.state.projectIdentifier}
                     onChange={this.onChange}
                   />
                   {errors.projectIdentifier && (
-                    <div className="invalid-feedback">{errors.projectIdentifier}</div> //emmet command: div.invalid-feedback
+                    <div className="invalid-feedback">{errors.projectIdentifier}</div>
                   )}
                 </div>
                 <div className="form-group">
                   <textarea
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid":errors.description
+                      "is-invalid": errors.description
                     })}
                     placeholder="Project Description"
                     name="description"
@@ -134,17 +163,17 @@ export class AddProject extends Component {
   }
 }
 
-//makes sure you have the prop you need and it is the right type (in this case createProject() function)
-AddProject.propTypes = {
-  createProject: PropTypes.func.isRequired,
+UpdateProject.propTypes = {
+  getProject: PropTypes.func.isRequired,
+  project: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };
 
-//connecting errors object to the state w/errors
 const mapStateToProps = (state) => ({
-  errors: state.errors,
+  project: state.project.project,
+  errors: state.errors
 });
 
-export default connect(mapStateToProps, { createProject })(AddProject);
-//connect component to state
-//the argument is how me map our state to props
+export default connect(mapStateToProps, { getProject, createProject })(
+  UpdateProject
+);

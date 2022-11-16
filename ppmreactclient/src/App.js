@@ -2,10 +2,11 @@ import './App.css';
 import Dashboard from './components/Dashboard';
 import Header from './components/Layout/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import AddProject from './components/Project/AddProject';
 import { Provider } from 'react-redux'; //Provider is how we define the store which we use for the application
 import store from './store';
+import UpdateProject from './components/Project/UpdateProject';
 
 function App() {
   return (
@@ -13,10 +14,9 @@ function App() {
       <Router>
         <div className="App">
           <Header />
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/addProject" element={<AddProject />} />
-          </Routes>
+          <Route exact path="/dashboard" component={Dashboard} />
+          <Route exact path="/addProject" component={AddProject} />
+          <Route exact path="/updateProject/:id" component={UpdateProject} />
         </div>
       </Router>
     </Provider>
