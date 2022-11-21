@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 class Header extends Component {
   render() {
@@ -6,7 +6,7 @@ class Header extends Component {
       <nav className="navbar navbar-expand-sm navbar-dark bg-primary mb-4">
         <div className="container">
           <a className="navbar-brand" href="Dashboard.html">
-            Personal Project Management Tool
+            Personal Project Management Tools
           </a>
           <button
             className="navbar-toggler"
