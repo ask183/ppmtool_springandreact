@@ -1,6 +1,7 @@
 package com.example.ppmtools.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -32,6 +33,12 @@ public class Project {
     private Date created_at;
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date updated_at;
+
+    //eager: when we load project object then the backlog info is readily available
+    //cascade: project is owning side of the relationship, meaning if i delete the project then the backlog & project task should be deleted but anything deleted downstream wont effect the project
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "project")
+    @JsonIgnore
+    private Backlog backlog;
 
     public Project() {}
 
@@ -97,6 +104,14 @@ public class Project {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public Backlog getBacklog() {
+        return backlog;
+    }
+
+    public void setBacklog(Backlog backlog) {
+        this.backlog = backlog;
     }
 
     @PrePersist
